@@ -1,0 +1,17 @@
+services:
+  database:
+    build:
+      context: ./database
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: movies_db
+
+  webapp:
+    build:
+      context: ./webapp
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database

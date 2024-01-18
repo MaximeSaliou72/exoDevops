@@ -1,5 +1,15 @@
+
 services:
   web:
     image: nginx
     ports:
       - "8080:80"
+    container_name: container_nginx
+
+  database:
+    image: postgres
+    container_name: container_db
+    environment:
+      POSTGRES_DB: database
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret

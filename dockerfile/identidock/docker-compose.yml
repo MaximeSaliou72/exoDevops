@@ -7,6 +7,8 @@ services:
       - identinet
     depends_on:
       - redis
+    environment:
+      - REDIS_HOST=redis
 
   dnmonster:
     image: amouat/dnmonster:1.0
@@ -16,12 +18,14 @@ services:
       - identinet
     depends_on:
       - redis
+    environment:
+      - REDIS_HOST=redis
+
+  redis:
+    image: "redis:alpine"
+    networks:
+      - identinet
 
 networks:
   identinet:
     driver: bridge
-
-redis:
-  image: "redis:alpine"
-  networks:
-    - identinet

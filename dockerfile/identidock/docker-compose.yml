@@ -3,8 +3,25 @@ services:
     build: .
     ports:
       - "5000:5000"
+    networks:
+      - identinet
+    depends_on:
+      - redis
 
   dnmonster:
     image: amouat/dnmonster:1.0
     ports:
       - "8000:8080"
+    networks:
+      - identinet
+    depends_on:
+      - redis
+
+networks:
+  identinet:
+    driver: bridge
+
+redis:
+  image: "redis:alpine"
+  networks:
+    - identinet

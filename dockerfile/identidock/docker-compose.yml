@@ -1,12 +1,19 @@
 services:
   identidock:
+    labels:
+      - "traefik.http.routers.identidock.rule=Host(`monster.localhost`)"
+      - "traefik.http.services.identidock.loadbalancer.server.port=5000"
+      - "traefik.enable=true"
+      - "traefik.docker.network=identinet"
+
     build: .
-    ports:
-      - "5000:5000"
     networks:
       - identinet
     environment:
+      - FLASK_APP=/app/identidock.py
       - FLASK_ENV=development
+    volumes:
+      - ./app:/app
 
   dnmonster:
     image: amouat/dnmonster:1.0
@@ -14,6 +21,22 @@ services:
       - "8000:8080"
     networks:
       - identinet
+
+  reverse-proxy:
+      image: traefik:v2.4
+      command:
+        - --api.insecure=true
+        - --providers.docker=true
+        - --entrypoints.web.address=:80
+        - --providers.docker.exposedbydefault=true
+
+      ports:
+        - "80:80"
+        - "8080:8080"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      networks:
+        - identinet
 
   redis:
     image: redis

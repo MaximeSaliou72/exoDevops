@@ -12,9 +12,13 @@ services:
 
   filebeat:
     image: docker.elastic.co/beats/filebeat:7.13.0
+    command: sh -c './filebeat -e -strict.perms=false modules enable nginx && exec filebeat -e -strict.perms=false'
     user: root
     depends_on:
-      - elasticsearch
+      kibana: 
+        condition: service_started
+        restart: true
+
     volumes:
       - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -30,6 +34,16 @@ services:
       - elasticsearch
     ports:
       - 5601:5601
+    networks:
+      - logging-network
+
+  web:
+    image: nginx
+    ports:
+      - 127.0.0.1:8080:80
+    working_dir: /app
+    volumes:
+      - ./web:/app
     networks:
       - logging-network
 

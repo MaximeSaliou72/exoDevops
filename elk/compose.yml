@@ -49,6 +49,11 @@ services:
       - logging-network
     environment:
       - -strict.perms=false
+    depends_on:
+      kibana: 
+        condition: service_started
+        restart: true
+    restart: always
 
   web:
     image: nginx
@@ -57,6 +62,7 @@ services:
     working_dir: /app
     volumes:
       - ./web:/app
+      - ./templates/conf.d:/etc/nginx/conf.d
     networks:
       - logging-network
 

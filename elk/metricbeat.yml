@@ -1,11 +1,33 @@
-metricbeat.autodiscover:
-  providers:
-    - type: docker
-      templates:
-        - condition:
-            contains:
-              docker.container.image: nginx
-          config:
-            - module: nginx
-              metricsets: ["stubstatus"]
-              hosts: "${data.host}:${data.port}"
+metricbeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+setup.kibana:
+  host: "kibana:5601"
+metricbeat.modules:
+  module: docker
+  enabled: true
+  metricsets: ["stubstatus"]
+  period: 5s
+  hosts: ["http://nginx"]
+  server_status_path: "nginx_status"
+  metricsets: ["container", "cpu", "diskio", "healthcheck", "info", "memory", "network"]
+  setup.dashboards.enabled: true
+  hosts: ["unix:///var/run/docker.sock"]
+  period: 10s
+  enabled: true
+
+# metricbeat.autodiscover:
+#   providers:
+#     - type: docker
+#       templates:
+#         - condition:
+#             contains:
+#               docker.container.image: nginx
+#           config:
+#             - module: nginx
+#               metricsets: ["stubstatus"]
+#               hosts: "nginx:${data.port}"
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]

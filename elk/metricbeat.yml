@@ -1,0 +1,11 @@
+metricbeat.autodiscover:
+  providers:
+    - type: docker
+      templates:
+        - condition:
+            contains:
+              docker.container.image: nginx
+          config:
+            - module: nginx
+              metricsets: ["stubstatus"]
+              hosts: "${data.host}:${data.port}"
